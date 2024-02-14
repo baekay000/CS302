@@ -1,0 +1,1 @@
+usage: ./Prog2 -stdsort | -qsort [k0 k1] file.txt
