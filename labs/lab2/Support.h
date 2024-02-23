@@ -1,5 +1,5 @@
 /* Kaylee Bae
-Lab 1: Program that alphabetizes a handful of cities and states and their
+Lab 2: Program that alphabetizes a handful of cities and states and their
 weather data using various data structures from CS202.
 */
 

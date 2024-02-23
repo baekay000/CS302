@@ -5,7 +5,7 @@ BIN = Prog3
 
 all: $(BIN)
 
-prog3: Support.h Prog3.cpp
+Prog3: Support.h Prog3.cpp
 	$(CC) $(CFLAGS) -o Prog3 Prog3.cpp
 
 clean:
