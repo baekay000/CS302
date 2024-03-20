@@ -1,6 +1,6 @@
 
 CC = g++
-CFLAGS = -Wall
+CFLAGS = -g -Wall
 BIN = Prog5
 
 all: $(BIN)

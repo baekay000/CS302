@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -8,40 +9,34 @@
 
 using namespace std;
 
-// void writetofile(string filename) {
-//   // open file
-//   ifstream fstream{filename};
+// template <typename T>
+void writetofile(string filename, vector<string> vertices,
+                 vector<set<int>> vertices_set) {
+  int max_length = 0;
 
-//   for (int i = 0; i < Nvertices; i++) {
-//     // for (each adjacent vertex j) {
-//     // pretty - print name[i] and name[j]
-//   }
+  // the length of the longest name is determined
+  for (int i = 0; i < vertices.size(); i++) {
+    max_length = max(max_length, (int)vertices[i].length());
+  }
 
-//   // close file
-//   fstream.close();
-// }
+  ofstream fout(filename.c_str(), fstream::trunc);
 
-// void graph<Tkey>::read(const char *fname) {
-//   ifstream in(fname);
-//   string input;
-//   getline(in, input);
-//   if (input.compare("# UNDIRECTED") == 0)
-//     graph_type = UNDIRECTED;
-//   else if (input.compare("# DIRECTED") == 0)
-//     graph_type = DIRECTED;
-//   else {
-//     cerr << "error: graph type not known\n";
-//     exit(1);
-//   }
-//   // Create mapping from key to index
-//   Tkey key1, key2;
-//   vector<pair<int, int>> Eij;
-//   while (in >> key1 >> key2) {
-//     key_map.insert(make_pair(key1, key_map.size()));
-//     key_map.insert(make_pair(key2, key_map.size()));
-//     Eij.push_back(make_pair(key_map[key1], key_map[key2]));
-//   }
-//   in.close();
+  for (int i = 0; i < vertices.size(); i++) {
+    int counter8 = 1;
+    fout << left << setw(max_length) << vertices[i] << " : ";
+    for (int mysetit : vertices_set[i]) {
+      if (counter8 % 9 == 0) {
+        fout <<  endl;
+        fout << left << setw(max_length) << vertices[i] << " : ";
+      }
+      fout << setw(max_length) << vertices[mysetit] << " ";
+      counter8++;
+    }
+
+    fout << endl;
+  }
+  fout.close();
+}
 
 int main(int argc, char *argv[]) {
   bool sort = false;
@@ -72,76 +67,76 @@ int main(int argc, char *argv[]) {
 
   // vector of sets (binary search trees) stores the indices of adjacent
   // vertices
-  vector<set<int>> adjacent_vertices;
+  vector<pair<int, int>> adjacent_vertices;
+
+  // vector of sets  --> do know and might know
+  // vector<set<int>> do_know;
 
   // map to see if name exists
   map<string, int> name_map;
 
   // vertice pair using index ints for names
-  set<int, int> vertice_pairs;
+  vector<set<int>> edge_list;
 
   int index1 = 0;
   int index2 = 0;
 
   while (cin >> key1 >> key2) {
-    map<string, int>::iterator findkey1 = name_map.find(key1);
-    map<string, int>::iterator findkey2 = name_map.find(key2);
-
-    if (findkey1 != name_map.end()) {
-      // name does not exist
-      vertices.push_back(key1);
-      index1 = vertices.size();
-    } else {
-      index1 = findkey1->second;
-    }
-
-    // unsure if necessary
-    if (findkey2 != name_map.end()) {
-      // name does not exist
-      vertices.push_back(key2);
-      index2 = vertices.size();
-    } else {
-      index2 = findkey1->second;
-    }
-
-    // insert int into set
-    adjacent_vertices[index1].insert(index2);
-
-    // for the other one two
-    // adjacent_vertices[index1].insert(index2);
-
+    name_map.insert(make_pair(key1, name_map.size()));
+    name_map.insert(make_pair(key2, name_map.size()));
+    adjacent_vertices.push_back(make_pair(name_map[key1], name_map[key2]));
   }
 
-  // create do_know graph : vertex list : vector<string> edge list
-  // : vector<set<int>>
+  edge_list.resize(name_map.size());
+
+  for (int k = 0; k < (int)adjacent_vertices.size(); k++) {
+    int i = adjacent_vertices[k].first;
+    int j = adjacent_vertices[k].second;
+    edge_list[i].insert(j);
+    edge_list[j].insert(i);
+  }
+
+  vertices.resize(name_map.size());
+
+  map<string, int>::iterator myit = name_map.begin();
+  while (myit != name_map.end()) {
+    vertices[myit->second] = myit->first;
+    ++myit;
+  }
 
   // writetofile("do_know.txt", ...)
   string fname_out = "doknow.txt";
+  writetofile(fname_out, vertices, edge_list);
 
-  ofstream fout(fname_out.c_str(), fstream::trunc);
-  for (int i = 0; i < adjacent_vertices.size(); i++) {
-    fout << setw(1) << vertices[i] << " : ";
-    
-    // iterate through set to print out all known people
-    for (set<int>::iterator it = adjacent_vertices[i].begin(); it != adjacent_vertices[i].end(); ++it) {
-      fout << *it << " ";
+  vector<set<int>> friends_of_friends;
+  friends_of_friends.resize(name_map.size());
+
+  int myvertice = 0;
+  for (set<int> setlist : edge_list) {
+    for (int myfriend : setlist) {
+      for (int potentialfriend : edge_list[myfriend]) {
+        if (setlist.count(potentialfriend) == 0 && potentialfriend != myvertice) {
+          friends_of_friends[myvertice].insert(potentialfriend);
+        }
+      }
     }
-    
-    fout << endl;
-
-
+    myvertice++;
   }
+
+  fname_out = "mightknow.txt";
+  writetofile(fname_out, vertices, friends_of_friends);
+
+  // template <typename T>
+  // vector<set<T>> mytemplateset;
+
 
   // while (p1 != p2) {
   //   fout << *p1 << "\n";
   //   ++p1;
   // }
-
-  fout.close();
 }
 
 // create might_know graph : edge list
 // : vector<set<int>>
 
 // writetofile("might_know.txt", ...)
-
