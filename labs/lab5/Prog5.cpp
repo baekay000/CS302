@@ -1,3 +1,9 @@
+/* Kaylee Bae
+NetID: kbae1
+Lab 5: Program that uses a social network graph to suggest people that a person
+does know and might know.
+*/
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -9,30 +15,32 @@
 
 using namespace std;
 
-// template <typename T>
+// Write to file for do_know.txt and might_know.txt
 void writetofile(string filename, vector<string> vertices,
                  vector<set<int>> vertices_set) {
   int max_length = 0;
 
-  // the length of the longest name is determined
-  for (int i = 0; i < vertices.size(); i++) {
+  // length of the longest name is determined
+  for (int i = 0; i < (int)vertices.size(); i++) {
     max_length = max(max_length, (int)vertices[i].length());
   }
 
+  // write to file stream
   ofstream fout(filename.c_str(), fstream::trunc);
 
-  for (int i = 0; i < vertices.size(); i++) {
+  // iterate through the vertices to print out the output
+  for (int i = 0; i < (int)vertices.size(); i++) {
     int counter8 = 1;
-    fout << left << setw(max_length) << vertices[i] << " : ";
+    fout << left << setw(max_length) << vertices[i] << " :";
     for (int mysetit : vertices_set[i]) {
-      if (counter8 % 9 == 0) {
-        fout <<  endl;
-        fout << left << setw(max_length) << vertices[i] << " : ";
+      // pretty print with each line only printing out 8 additional names
+      if (counter8 % 8 == 1 && counter8 != 1) {
+        fout << endl;
+        fout << left << setw(max_length) << vertices[i] << " :";
       }
-      fout << setw(max_length) << vertices[mysetit] << " ";
+      fout << " " << setw(max_length) << vertices[mysetit];
       counter8++;
     }
-
     fout << endl;
   }
   fout.close();
@@ -44,51 +52,66 @@ int main(int argc, char *argv[]) {
   // handle command line arguments
 
   if (argc != 1 && argc != 2) {
-    cerr << "usage: ./sprog5 [-sort] < file.txt" << endl;
+    cerr << "usage: ./Prog5 [-sort] < file.txt" << endl;
     exit(1);
   }
   if (argc == 2 && (string)argv[1] != "-sort") {
-    cerr << "usage: ./sprog5 [-sort] < file.txt" << endl;
+    cerr << "usage: ./Prog5 [-sort] < file.txt" << endl;
     exit(1);
   } else if (argc == 2) {
+    // parse out if there is a sort argument
     sort = true;
   }
 
-  // read data from stdin create name - to -
-  // index map
-
+  // read data from stdin create name-to-index map
   string key1, key2;
-  // pair<string, string> mypair;
-  // // map m where strings are the names and int is the order read
-  // map<set<pair<string, string>>> m;
 
   // vector to store vertices that represent names read
   vector<string> vertices;
 
-  // vector of sets (binary search trees) stores the indices of adjacent
-  // vertices
+  // vector of sets (BST) stores the indices of adjacent vertices
   vector<pair<int, int>> adjacent_vertices;
 
-  // vector of sets  --> do know and might know
-  // vector<set<int>> do_know;
-
-  // map to see if name exists
+  // map to see if name has already been seen
   map<string, int> name_map;
 
   // vertice pair using index ints for names
   vector<set<int>> edge_list;
 
-  int index1 = 0;
-  int index2 = 0;
+  // vector for mapping sorted data - only used if sorting is true
+  vector<pair<string, int>> sortedvec = {};
 
+  // read ino cin and insert into name_map
   while (cin >> key1 >> key2) {
     name_map.insert(make_pair(key1, name_map.size()));
     name_map.insert(make_pair(key2, name_map.size()));
     adjacent_vertices.push_back(make_pair(name_map[key1], name_map[key2]));
   }
 
+  if (sort) {
+    // Update integer values in (sorted)
+    vector<int> changedint(name_map.size());
+    int sortedorder = 0;
+
+    // iterate through name_map and populate the changedint
+    for (map<string, int>::iterator iter = name_map.begin();
+         iter != name_map.end(); ++iter) {
+      changedint[iter->second] = sortedorder;
+      iter->second = sortedorder;
+      sortedorder++;
+    }
+
+    // for adj_vertices, change the first and second int
+    for (pair<int, int> &myvector : adjacent_vertices) {
+      myvector.first = changedint[myvector.first];
+      myvector.second = changedint[myvector.second];
+    }
+  }
+
   edge_list.resize(name_map.size());
 
+  // insert the adjacent vertices into edge_list
+  // keeps track of integers for each name (index)
   for (int k = 0; k < (int)adjacent_vertices.size(); k++) {
     int i = adjacent_vertices[k].first;
     int j = adjacent_vertices[k].second;
@@ -98,24 +121,29 @@ int main(int argc, char *argv[]) {
 
   vertices.resize(name_map.size());
 
+  // populate vertices so each vertice has a string name
   map<string, int>::iterator myit = name_map.begin();
   while (myit != name_map.end()) {
     vertices[myit->second] = myit->first;
     ++myit;
   }
 
-  // writetofile("do_know.txt", ...)
-  string fname_out = "doknow.txt";
+  // write to file
+  string fname_out = "do_know.txt";
   writetofile(fname_out, vertices, edge_list);
 
+  // for friends_of_friends
   vector<set<int>> friends_of_friends;
   friends_of_friends.resize(name_map.size());
 
   int myvertice = 0;
+  // check if the potential friend is a listed friend
   for (set<int> setlist : edge_list) {
     for (int myfriend : setlist) {
       for (int potentialfriend : edge_list[myfriend]) {
-        if (setlist.count(potentialfriend) == 0 && potentialfriend != myvertice) {
+        if (setlist.count(potentialfriend) == 0 &&
+            potentialfriend != myvertice) {
+          // if not, insert into the friends_of_friends vector
           friends_of_friends[myvertice].insert(potentialfriend);
         }
       }
@@ -123,20 +151,8 @@ int main(int argc, char *argv[]) {
     myvertice++;
   }
 
-  fname_out = "mightknow.txt";
+  // write to might_know
+  fname_out = "might_know.txt";
   writetofile(fname_out, vertices, friends_of_friends);
 
-  // template <typename T>
-  // vector<set<T>> mytemplateset;
-
-
-  // while (p1 != p2) {
-  //   fout << *p1 << "\n";
-  //   ++p1;
-  // }
 }
-
-// create might_know graph : edge list
-// : vector<set<int>>
-
-// writetofile("might_know.txt", ...)
