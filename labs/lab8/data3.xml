@@ -1,0 +1,178 @@
+<?XML version="1.0" encode="ASCII"?>
+
+<student>
+  <name="Barb Aryan"/>
+  <category="Freshman"/>
+  <course="PH2 Particle Bored" gp="3.0"/>
+  <course="MA2 Boohlean Logic" gp="2.0"/>
+  <course="CS2 Memory Loss" gp="3.5"/>
+  <course="CS7 Reading Core Dumps" gp="4.0"/>
+  <course="CS6 Dynamic Programming" gp="4.0"/>
+</student>
+
+<student>
+  <name="Anna Graham"/>
+  <category="Sophomore"/>
+  <course="MA3 Pudding Proofs" gp="2.0"/>
+  <course="PH4 Warp Drive Propulsion" gp="3.5"/>
+  <course="PH2 Particle Bored" gp="4.0"/>
+</student>
+
+<student>
+  <name="Sarah Bellum"/>
+  <category="Freshman"/>
+  <course="MA4 Graph Coloring" gp="2.0"/>
+  <course="PH2 Particle Bored" gp="2.5"/>
+  <course="CS8 HTML Web Weaving" gp="3.5"/>
+  <course="MA3 Pudding Proofs" gp="4.0"/>
+</student>
+
+<student>
+  <name="Barb Dwyer"/>
+  <category="Senior"/>
+  <course="PH2 Particle Bored" gp="4.0"/>
+  <course="MA3 Pudding Proofs" gp="3.0"/>
+  <course="CS6 Dynamic Programming" gp="2.0"/>
+  <course="CS1 Problem Solving" gp="3.5"/>
+  <course="PH1 Perms and Waves" gp="2.5"/>
+</student>
+
+<student>
+  <name="Myles Long"/>
+  <category="Senior"/>
+  <course="PH3 Strings and Dark Matter" gp="4.0"/>
+  <course="CS4 Loops and Cycles" gp="2.0"/>
+  <course="MA2 Boohlean Logic" gp="4.0"/>
+</student>
+
+<student>
+  <name="Cara Van"/>
+  <category="Senior"/>
+  <course="CS2 Memory Loss" gp="2.5"/>
+  <course="PH2 Particle Bored" gp="2.0"/>
+  <course="CS7 Reading Core Dumps" gp="3.0"/>
+</student>
+
+<student>
+  <name="Warren Peace"/>
+  <category="Sophomore"/>
+  <course="PH4 Warp Drive Propulsion" gp="2.5"/>
+  <course="CS3 Garbage Collection" gp="3.5"/>
+  <course="PH1 Perms and Waves" gp="3.5"/>
+  <course="CS4 Loops and Cycles" gp="2.0"/>
+  <course="CS1 Problem Solving" gp="3.0"/>
+</student>
+
+<student>
+  <name="Molly Koehl"/>
+  <category="Junior"/>
+  <course="PH4 Warp Drive Propulsion" gp="2.0"/>
+  <course="CS6 Dynamic Programming" gp="4.0"/>
+  <course="CS1 Problem Solving" gp="3.0"/>
+  <course="PH3 Strings and Dark Matter" gp="3.5"/>
+  <course="MA3 Pudding Proofs" gp="2.0"/>
+</student>
+
+<student>
+  <name="Said Burn"/>
+  <category="Junior"/>
+  <course="CS2 Memory Loss" gp="2.0"/>
+  <course="CS3 Garbage Collection" gp="4.0"/>
+  <course="CS7 Reading Core Dumps" gp="3.5"/>
+  <course="PH4 Warp Drive Propulsion" gp="3.0"/>
+  <course="CS4 Loops and Cycles" gp="3.0"/>
+</student>
+
+<student>
+  <name="Bill Ding"/>
+  <category="Senior"/>
+  <course="CS7 Reading Core Dumps" gp="3.0"/>
+  <course="CS5 Static Programming" gp="3.5"/>
+</student>
+
+<student>
+  <name="Duane Pipe"/>
+  <category="Junior"/>
+  <course="MA1 Math for Chumps" gp="4.0"/>
+  <course="MA3 Pudding Proofs" gp="3.5"/>
+  <course="CS8 HTML Web Weaving" gp="3.5"/>
+  <course="PH3 Strings and Dark Matter" gp="2.0"/>
+</student>
+
+<student>
+  <name="Terry Aki"/>
+  <category="Senior"/>
+  <course="MA1 Math for Chumps" gp="4.0"/>
+  <course="CS8 HTML Web Weaving" gp="3.5"/>
+  <course="MA4 Graph Coloring" gp="3.0"/>
+  <course="CS5 Static Programming" gp="3.0"/>
+</student>
+
+<student>
+  <name="Sue Mie"/>
+  <category="Junior"/>
+  <course="PH1 Perms and Waves" gp="2.5"/>
+  <course="PH3 Strings and Dark Matter" gp="2.5"/>
+</student>
+
+<faculty>
+  <name="Eileen Dover"/>
+  <category="Professor"/>
+  <course="MA4 Graph Coloring"/>
+</faculty>
+
+<student>
+  <name="Anita Bath"/>
+  <category="Junior"/>
+  <course="CS8 HTML Web Weaving" gp="3.5"/>
+  <course="CS5 Static Programming" gp="2.0"/>
+  <course="CS1 Problem Solving" gp="3.5"/>
+  <course="CS3 Garbage Collection" gp="2.5"/>
+  <course="CS6 Dynamic Programming" gp="4.0"/>
+</student>
+
+<student>
+  <name="Moe Degrass"/>
+  <category="Freshman"/>
+  <course="PH4 Warp Drive Propulsion" gp="2.5"/>
+  <course="CS4 Loops and Cycles" gp="2.0"/>
+  <course="CS3 Garbage Collection" gp="3.0"/>
+  <course="CS5 Static Programming" gp="4.0"/>
+</student>
+
+<student>
+  <name="Jay Walker"/>
+  <category="Sophomore"/>
+  <course="CS1 Problem Solving" gp="1.0"/>
+  <course="CS2 Memory Loss" gp="2.5"/>
+</student>
+
+<student>
+  <name="Anna Fender"/>
+  <category="Freshman"/>
+  <course="PH2 Particle Bored" gp="3.0"/>
+  <course="CS6 Dynamic Programming" gp="2.5"/>
+  <course="CS5 Static Programming" gp="3.0"/>
+  <course="CS7 Reading Core Dumps" gp="3.5"/>
+</student>
+
+<student>
+  <name="Tina Ryhard"/>
+  <category="Junior"/>
+  <course="PH4 Warp Drive Propulsion" gp="2.5"/>
+  <course="MA4 Graph Coloring" gp="2.0"/>
+  <course="MA2 Boohlean Logic" gp="4.0"/>
+</student>
+
+<faculty>
+  <name="Neil Down"/>
+  <category="Associate Professor"/>
+  <course="PH3 Strings and Dark Matter"/>
+</faculty>
+
+<faculty>
+  <name="Joe King"/>
+  <category="Professor"/>
+  <course="CS7 Reading Core Dumps"/>
+</faculty>
+
