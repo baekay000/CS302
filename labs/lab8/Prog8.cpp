@@ -1,3 +1,10 @@
+/*
+Kaylee Bae
+NetID: kbae1
+Parses an XML file with student and faculty information to practice the concept
+of inheritance.
+*/
+
 #include <algorithm>
 #include <fstream>
 #include <iostream>
@@ -12,13 +19,13 @@ using namespace std;
 
 int main(int argc, char *argv[]) {
   // declare variables
-  person *n_person;
   student *n_student;
   faculty *n_faculty;
 
+  // keeps track of people, faculty course_list, and student course_gp_list
   vector<person *> person_list;
   vector<string> course_list;
-  vector<float> gp_list;
+  vector<pair<string, float>> course_gp_list;
 
   // 3 settings: person, faculty, student
   bool person_mode = false;
@@ -48,7 +55,7 @@ int main(int argc, char *argv[]) {
   label type = UNKNOWN;
   label category = UNKNOWN;
 
-  int line = 1;
+  int line = 0;
   string input;
 
   // open input file stream fin
@@ -64,6 +71,9 @@ int main(int argc, char *argv[]) {
   const string facultytag = "faculty";
   const string studenttag = "student";
   const string nametag = "name";
+  const string categorytag = "category";
+  const string coursetag = "course";
+  const string xmltag = "<?XML";
 
   // 2 types: faculty, student
   bool is_faculty = false;
@@ -76,35 +86,44 @@ int main(int argc, char *argv[]) {
     ++line;
 
     // skip first line
-    if (line == 2) {
+    if (line == 1) {
+      // error check that there is an XML tag
+      if (input.find(xmltag) == string::npos) {
+        cerr << "line " << line << ": XML declaration missing" << endl;
+        return 1;
+      }
       continue;
     }
 
     // input does not contain < character
-    ulong first_tag = input.find('<');
-    if (first_tag == string::npos) {
+    if (input.find('<') == string::npos) {
       continue;
     }
 
     // input is <faculty> tag
-    first_tag = input.find('<' + facultytag);
-    if (first_tag != string::npos) {
+    if (input.find('<' + facultytag) != string::npos) {
+      // updatetype, is_faculty
       is_faculty = true;
+      type = FACULTY;
+
+      // clear relevant vectors
       course_list.clear();
+      course_gp_list.clear();
       continue;
     }
 
     // input is </faculty> tag
-    first_tag = input.find('/' + facultytag);
-    if (first_tag != string::npos) {
+    if (input.find('/' + facultytag) != string::npos) {
       if (!is_faculty) {
-        cout << "incorrect" << endl;
+        cerr << "line " << line << ": expected </student> tag" << endl;
+        return 1;
       } // file is in incorrect format
 
       // create n_person faculty object
       faculty *n_faculty = new faculty(my_name, type, category);
 
       // sort courses
+      sort(course_list.begin(), course_list.end());
 
       // add courses
       for (string course : course_list) {
@@ -123,28 +142,37 @@ int main(int argc, char *argv[]) {
     }
 
     // input is <student> tag
-    first_tag = input.find('<' + studenttag);
-    if (first_tag != string::npos) {
+    if (input.find('<' + studenttag) != string::npos) {
       is_student = true;
+      type = STUDENT;
 
       // clear course_list clear gp_list
       course_list.clear();
-      gp_list.clear();
+      course_gp_list.clear();
 
       continue;
     }
 
     // input is </student> tag
-    first_tag = input.find('/' + studenttag);
-    if (first_tag != string::npos) {
+    if (input.find('/' + studenttag) != string::npos) {
       if (!is_student) {
-        cout << "incorrect" << endl;
+        cerr << "line " << line << ": expected </faculty> tag" << endl;
+        return 1;
       } // file is in incorrect format
 
       // create n_person student object
       student *n_student = new student(my_name, type, category);
 
-      // TODO: add course, gp pairs from course_list, gp_list
+      // sort the vector using the course names
+      sort(course_gp_list.begin(), course_gp_list.end(),
+           [](pair<string, float> a, pair<string, float> b) {
+             return a.first < b.first;
+           });
+
+      // add the courses after sorting
+      for (pair<string, float> course : course_gp_list) {
+        n_student->add_course(course);
+      }
 
       // add n_person to person_list
       person_list.push_back(n_student);
@@ -158,74 +186,135 @@ int main(int argc, char *argv[]) {
     }
 
     // input is <name> tag
-    ulong start = input.find(nametag + '=');
-    if (start != string::npos) {
+    if (input.find(nametag + '=') != string::npos) {
 
       // error check if there is an ending / tag
-      ulong end = input.find('/');
-      if (end == string::npos) {
-        cout << "error" << endl;
+      if (input.find('/') == string::npos) {
+        cerr << "line " << line << ": name missing/not terminated" << endl;
+        return 1;
       }
-      my_name = input.substr(start + 6, input.length() - 12);
+      my_name = input.substr(9, input.length() - 12);
+
+      if (is_faculty) {
+        // add doctor title
+        my_name = "Dr. " + my_name;
+      }
+      continue;
     }
 
-    // // parse the next row by creating a substring
-    // string person_role = input.substr(first_tag + 1, input.length() - 2);
-    // cout << person_role << endl;
+    // input is <category>
+    if (input.find(categorytag + '=') != string::npos) {
 
-    // else if (first_tag + 1 == "student"){
-    //   // checks if student or faculty tag
+      if (input.find('/') == string::npos) {
+        cerr << "line " << line << ": category missing/not terminated" << endl;
+        return 1;
+      }
 
-    // }
+      // find and extract category
+      string category_name = input.substr(13, input.length() - 16);
 
-    // find person -- version 1
+      // convert string to enum label
+      if (category_name == "Assistant Professor") {
+        category = ASST_PROF;
+      } else if (category_name == "Associate Professor") {
+        category = ASSOC_PROF;
+      } else if (category_name == "Professor") {
+        category = PROFESSOR;
+      } else if (category_name == "Freshman") {
+        category = FRESHMAN;
+      } else if (category_name == "Sophomore") {
+        category = SOPHOMORE;
+      } else if (category_name == "Junior") {
+        category = JUNIOR;
+      } else if (category_name == "Senior") {
+        category = SENIOR;
+      }
 
-    // else if (input.find('<' + facultytag) != string::npos) {
-    //   cout << "YAY, FACULTY!!!!" << endl;
-    //   string str2 = input.substr(start + 1, start + 8);
-    //   cout << str2 << endl;
+      continue;
+    }
+
+    // input is <course>
+    if (input.find(coursetag + '=') != string::npos) {
+      // find and extract course add course to course_list
+      if (is_student) {
+        // parse out course and gpa information
+        string course = input.substr(11, input.length() - 23);
+        float gpa = stof(input.substr(input.length() - 6, 3));
+
+        // push back into the correct vector
+        course_gp_list.push_back(make_pair(course, gpa));
+
+      } else {
+        // faculty do not keep track of GPA
+        string course = input.substr(11, input.length() - 14);
+        course_list.push_back(course);
+      }
+
+      if (input.find('/') == string::npos) {
+        cerr << "line " << line << ": category missing/not terminated" << endl;
+        return 1;
+      }
+    }
   }
 
-  // Sort the vector using a lambda function with <
-  sort(person_list.begin(), person_list.end(),
-       [](person *a, person *b) { return *a < *b; });
+  if (person_mode) {
+    // Sort the vector using a lambda function with <
+    sort(person_list.begin(), person_list.end(),
+         [](person *a, person *b) { return *a < *b; });
 
-  for (person *my_per : person_list) {
-    cout << my_per->read_name() << endl;
+    // print out the person information
+    for (int i = 0; i < (int)person_list.size(); i++) {
+      cout << *(person_list[i]);
+      cout << endl;
+    }
+  } else if (faculty_mode) {
+
+    // put only the faculty in the faculty vector
+    vector<faculty *> faculty_list;
+    for (int i = 0; i < (int)person_list.size(); i++) {
+      if (person_list[i]->get_type() == FACULTY) {
+        faculty_list.push_back(dynamic_cast<faculty *>(person_list[i]));
+      }
+    }
+
+    // sort the faculty vector
+    sort(faculty_list.begin(), faculty_list.end(),
+         [](faculty *a, faculty *b) { return *a < *b; });
+
+    // print out information
+    for (int i = 0; i < (int)faculty_list.size(); i++) {
+      cout << *(faculty_list[i]);
+      cout << endl;
+    }
+
+  } else {
+    // student mode
+    vector<student *> student_list;
+
+    // put only student in the vector
+    for (int i = 0; i < (int)person_list.size(); i++) {
+      if (person_list[i]->get_type() == STUDENT) {
+        student_list.push_back(dynamic_cast<student *>(person_list[i]));
+      }
+    }
+
+    // sort the faculty vector
+    sort(student_list.begin(), student_list.end(),
+         [](student *a, student *b) { return *a < *b; });
+
+    // print
+    for (int i = 0; i < (int)student_list.size(); i++) {
+      cout << *(student_list[i]);
+      cout << endl;
+    }
   }
 
-  // else if (input is < category tag) == 0) {
-  //     find and extract category
-  //   error check: end-of-tag>
-
-  //   }
-  //   else if (input is < course tag) == 0) {
-  //       find and extract course add course to course_list
-
-  //               if type STUDENT{find and extract gp add gp to gp_list}
-
-  //               error check : end -
-  //                             of - tag >
-  //     }
-  // }
-
-  // if mode
-  //   PERSON {
-  //     create list of person object pointers apply std::sort using lambda
-  //     less
-  //     -
-  //         than function write result to stdout
-  //   }
-  // else if mode
-  //   FACULTY {
-  //     create list of faculty object pointers apply std::sort using lambda
-  //     less -
-  //         than function write result to stdout
-  //   }
-  // else if mode
-  //   STUDENT{create list of student object pointers apply
-  //               std::sort using lambda less -
-  //           than function write result to stdout}
-
-  //   release dynamically allocated memory
+  // delete allocated memory
+  for (person *my_person : person_list) {
+    if (my_person->get_type() == FACULTY) {
+      delete dynamic_cast<faculty *>(my_person);
+    } else {
+      delete dynamic_cast<student *>(my_person);
+    }
+  }
 }
